@@ -17,15 +17,19 @@ class Csound < Formula
   depends_on 'liblo' => :recommended
   depends_on 'boost' => :recommended
   depends_on 'libpng' => :recommended
-  depends_on 'stk' => :recommended
+  depends_on 'stk' => :optional
   depends_on 'fltk' => :recommended
   depends_on 'eigen' => :recommended
 
   option :universal
 
   def install
-    system "cmake", ".", "-DUSE_GETTEXT=0", *std_cmake_args
-    system "make", "install" # if this fails, try separate make/make install steps
+    if build.with? "stk"
+      system "cmake", ".", "-DUSE_GETTEXT=0", "-DBUILD_STK_OPCODES=1", *std_cmake_args
+    else
+      system "cmake", ".", "-DUSE_GETTEXT=0", "-DBUILD_STK_OPCODES=0", *std_cmake_args
+    end
+    system "make", "install"
   end
 
   test do
